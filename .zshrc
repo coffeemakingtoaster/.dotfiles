@@ -14,11 +14,15 @@ COMPLETION_WAITING_DOTS="true"
 plugins=(git docker node python)
 source $ZSH/oh-my-zsh.sh
 
+if type "xrandr" > /dev/null; then
 # Rotate screen and their position for home setup
 xrandr --output HDMI-A-1 --rotate left --pos 0x0 --output DisplayPort-0 --pos 1080x1920 
+fi
 
+if type "feh" > /dev/null; then
 # Set background for new workspaces
 feh --bg-fill --no-xinerama /home/max/Pictures/Wallpapers/active/wallpaper.jpg
+fi
 
 # Start shell directly in tmux
 if command -v tmux &> /dev/null && [ -z "$TMUX" ]; then
