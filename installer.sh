@@ -6,3 +6,5 @@ sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/too
 cp .zshrc ~/.zshrc
 # Source
 source ~/.zshrc
+# cp scripts
+cp scripts ~/.scripts

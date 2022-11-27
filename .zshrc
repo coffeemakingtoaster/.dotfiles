@@ -5,11 +5,7 @@ export XDG_CONFIG_HOME="$HOME/.config"
 
 ZSH_THEME="bureau"
 
-
-
 COMPLETION_WAITING_DOTS="true"
-
-
 
 plugins=(git docker node python)
 source $ZSH/oh-my-zsh.sh
@@ -33,3 +29,5 @@ if command -v tmux &> /dev/null && [ -z "$TMUX" ]; then
 		tmux new-window -n "vim"\; new-window -n "runtime"\; attach 
 	fi
 fi
+
+alias translocator='. ~/.scripts/translocator.sh'
