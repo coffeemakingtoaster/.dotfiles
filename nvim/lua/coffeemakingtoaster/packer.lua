@@ -10,21 +10,49 @@ require('packer').startup(function(use)
   -- My plugins 
 
   use 'wbthomason/packer.nvim'
-  use 'folke/tokyonight.nvim'
+  use { 
+    'olivercederborg/poimandres.nvim',
+    config = function()
+      require('poimandres').setup {
+      -- leave this setup function empty for default config
+      -- or refer to the configuration section
+      -- for configuration options
+      }
+    end
+  }
   use 'davidhalter/jedi-vim'
   use {'neoclide/coc.nvim', branch = 'release'}
-  use {'nvim-lualine/lualine.nvim', requires = { 'kyazdani42/nvim-web-devicons', opt = true }}
+  use {'nvim-lualine/lualine.nvim', requires = { 'nvim-tree/nvim-web-devicons', opt = true }}
   use 'neovim/nvim-lspconfig'
 
   use{
 	'nvim-telescope/telescope.nvim', tag = '0.1.0',
 	requires={{'nvim-lua/plenary.nvim'}}
   }
-	  -- Packer sync to ensure plugins are installed 
+
+	-- install without yarn or npm
+  use({
+    "iamcco/markdown-preview.nvim",
+    run = function() vim.fn["mkdp#util#install"]() end,
+  })
+
+  use 'iamcco/mathjax-support-for-mkdp'
+	
+  -- Command autocomplete
+  use {
+  'gelguy/wilder.nvim',
+  config = function()
+    -- config goes here
+  end,
+  }
+  
+  -- Plugin Zone end
+  -- Packer sync to ensure plugins are installed 
   require('packer').sync()
 
   -- Startup lua line
-  require('lualine').setup()
+  require('lualine').setup{ opts = { theme = iceberg_dark } }
+
   -- Startup neovim/nvim-lspconfig
   require('lspconfig')['tsserver'].setup{
 	on_attach=on_attach,
@@ -40,6 +68,10 @@ require('packer').startup(function(use)
   local tl_bldin = require('telescope.builtin')
   vim.keymap.set('n','ff',tl_bldin.find_files, {})
   vim.keymap.set('n', 'fb', tl_bldin.buffers, {})
+	
+  -- Activate vim command autocomplete
+  require('wilder').setup({modes = {':', '/', '?'}})
+
 
 end)
 
