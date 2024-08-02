@@ -1,1 +1,0 @@
-Plugin 'davidhalter/jedi-vim'
