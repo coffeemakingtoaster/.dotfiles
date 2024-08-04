@@ -10,4 +10,6 @@ sudo sed -ie 's@USE_IMAGE_FILL=false@USE_IMAGE_FILL=true@g' /bin/i3lockmore
 mkdir $HOME/.config/i3/
 cp ./config $HOME/.config/i3
 
+i3-msg restart
+
 exit 0
