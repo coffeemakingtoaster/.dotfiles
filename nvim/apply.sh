@@ -2,8 +2,7 @@
 
 echo "Install neovim (no package manager) and needed packages for kickstart (via apt)"
 
-sudo apt update
-sudo apt install make gcc ripgrep unzip git xclip curl git
+sudo apt install -y make gcc ripgrep unzip git xclip curl git
 
 # Now we install nvim
 curl -LO https://github.com/neovim/neovim/releases/latest/download/nvim-linux64.tar.gz
