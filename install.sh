@@ -43,5 +43,6 @@ function apply_conf () {
 
 directories=(`ls -l | grep '^d' | awk '{print $9}'`)
 for cmd in "${directories[@]}"; do
+	echo apply config for $cmd...
 	apply_conf $cmd
 done
