@@ -2,12 +2,6 @@
 
 ## Check if the -f flag is present
 if [ "$1" == "-f" ]; then
-	read -p "This will overwrite your current configuration. Are you sure? [y/N] " -n 1 -r
-	echo
-	if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-		exit 1
-	fi
-
 	export IGNORE_DOTFILES_CHECK=1
 else
 	export IGNORE_DOTFILES_CHECK=0
