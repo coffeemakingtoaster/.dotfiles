@@ -17,7 +17,7 @@ exec --no-startup-id xsettingsd &
 exec --no-startup-id compton -b
 
 # start a terminal
-bindsym $super+Return exec i3-sensible-terminal
+bindsym $super+Return exec wezterm 
 
 # start dmenu (a program launcher)
 bindsym $super+d exec rofi -show drun -style sidebar -show-icons -icon-theme "numix"
@@ -103,6 +103,9 @@ bindsym $super+r mode "resize"
 
 # panel
 bar {
+        # disable scroll
+        bindsym button4 nop
+        bindsym button5 nop
         colors {
         background #2f343f
         statusline #fffff
@@ -121,7 +124,7 @@ bar {
 #for_window [class=".*"] border pixel 4
 assign [class="kitty"] 1
 assign [class="code"] 2
-assign [class="google-chrome"] 3
+assign [class="brave*"] 3
 #assign [class=Geany|Evince|Gucharmap|Soffice|libreoffice*] 4
 #assign [class=Audacity|Vlc|mpv|Ghb|Xfburn|Gimp*|Inkscape] 5
 #assign [class=Lxappearance|System-config-printer.py|Lxtask|GParted|Pavucontrol|Exo-helper*|Lxrandr|Arandr] 6
