@@ -8,6 +8,6 @@ else
 	sudo apt install wezterm
 fi
 
-cp -r ./wezterm/ $HOME/.config
+cp -r wezterm $HOME/.config
 
 exit 0
