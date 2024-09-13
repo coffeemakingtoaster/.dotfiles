@@ -97,3 +97,5 @@ unset __conda_setup
 # <<< conda initialize <<<
 
 alias audio-control="pavucontrol"
+
+PATH=$PATH:~/.local/bin
