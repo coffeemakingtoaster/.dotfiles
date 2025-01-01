@@ -1,0 +1,2 @@
+custom-shader =./shaders/gears-and-belts.glsl
+gtk-titlebar = false
