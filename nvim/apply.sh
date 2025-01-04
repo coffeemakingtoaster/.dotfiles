@@ -4,7 +4,11 @@ echo "Install neovim (no package manager) and needed packages for kickstart (via
 
 sudo apt install -y make gcc ripgrep unzip git xclip curl git
 
+# Cleanup
+rm -rf ~/.local/share/nvim/
+
 # Now we install nvim
+# I use debian and the apt version is too far behind
 curl -LO https://github.com/neovim/neovim/releases/latest/download/nvim-linux64.tar.gz
 sudo rm -rf /opt/nvim-linux64
 sudo mkdir -p /opt/nvim-linux64
