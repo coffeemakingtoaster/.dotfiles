@@ -1,4 +1,7 @@
 #!/usr/bin/env bash
+if [ "$(uname)" == "Darwin" ]; then
+	exit 0
+fi
 
 sudo apt-get install -y feh imagemagick
 

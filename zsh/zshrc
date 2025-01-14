@@ -99,3 +99,5 @@ unset __conda_setup
 alias audio-control="pavucontrol"
 
 PATH=$PATH:~/.local/bin
+
+export GIT_EDITOR=vim

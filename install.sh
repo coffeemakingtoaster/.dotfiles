@@ -1,6 +1,12 @@
 #!/usr/bin/env bash
 
-sudo apt-get update
+if [ "$(uname)" == "Darwin" ]; then
+	/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+else
+	sudo apt-get update
+fi
+
+
 
 function apply_conf () {
 	cd ./$1

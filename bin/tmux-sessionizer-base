@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+tmux new-window -dn workspace
+tmux new-window -dn runtime
+nvim .
+clear
