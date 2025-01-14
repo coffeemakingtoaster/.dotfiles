@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 
-sudo apt-get install -y tmux 
+if [ "$(uname)" == "Darwin" ]; then
+	brew install tmux
+else
+	sudo apt-get install -y tmux 
+fi
 
 cp ./tmux.conf $HOME/.tmux.conf
 

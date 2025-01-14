@@ -7,7 +7,6 @@ else
 fi
 
 
-
 function apply_conf () {
 	cd ./$1
 	./apply.sh
