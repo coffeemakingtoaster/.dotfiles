@@ -6,5 +6,6 @@ else
 	sudo apt install fzf
 fi
 
+mkdir -p ~/.local/bin
 cp ./tmux-sessionizer ~/.local/bin
 cp ./tmux-sessionizer-base ~/.tmux-sessionizer
