@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+# disabled due to migration to sway -> kept for legacy purposes
+exit 0
+
 if [ "$(uname)" == "Darwin" ]; then
 	exit 1
 fi
