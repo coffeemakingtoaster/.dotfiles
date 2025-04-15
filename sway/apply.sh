@@ -5,7 +5,7 @@ if [ "$(uname)" == "Darwin" ]; then
 fi
 
 # basic installs
-sudo apt-get install -y sway wl-clipboard swaylock wdisplays swaybar
+sudo apt-get install -y sway wl-clipboard swaylock wdisplays swaybar slurp
 
 ## build wofi from source
 

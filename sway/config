@@ -69,6 +69,8 @@ bindsym $super+space floating toggle
 # change focus between tiling / floating windows
 bindsym $super+Shift+space focus mode_toggle
 
+bindsym $super+Shift+s exec grim -g "$(slurp)" - | wl-copy
+
 # switch to workspace
 bindsym $alt+Control+Right workspace next
 bindsym $alt+Control+Left workspace prev
@@ -118,7 +120,6 @@ bar {
 
     }
     status_command while ~/.config/sway/status.sh; do sleep 1; done
-        #status_command swaybar --id 1 2> /tmp/swayrbar.log
 }
 
 # window rules, you can find the window class using xprop
