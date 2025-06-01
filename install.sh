@@ -3,7 +3,7 @@
 if [ "$(uname)" == "Darwin" ]; then
 	/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 else
-	sudo apt-get update
+	sudo apt-get update && sudo apt-get install -y wget unzip
 fi
 
 
