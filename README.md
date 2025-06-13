@@ -1,6 +1,7 @@
 # dotfiles
 
-My fancy dotfiles, currently in the process of migrating to sway from X11.
+My fancy dotfiles...
+Previously used i3, have migrated to sway recently.
 
 ```sh
 sh dotfiles.ssh-coffee.dev/coffeemakingtoaster | sh
