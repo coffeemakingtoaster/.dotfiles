@@ -1,0 +1,40 @@
+[General]
+showTray=false
+telemetry=false
+
+[applications]
+enabled=true
+terminal=org.wezfurlong.wezterm
+
+[docs]
+enabled=true
+
+[files]
+enabled=true
+
+[hash]
+enabled=false
+
+[system]
+command_lock=swaylock --show-failed-attempts --daemonize --image ~/.config/img/lockscreens/active.jpg --show-keyboard-layout \n
+command_logout=swaymsg exit
+command_poweroff=shutdown now
+command_reboot=shutdown now -r
+enabled=true
+hibernate_enabled=false
+suspend_enabled=false
+
+[widgetsboxmodel]
+alwaysOnTop=true
+clearOnHide=true
+clientShadow=true
+darkTheme=Nord
+displayScrollbar=false
+followCursor=true
+hideOnFocusLoss=true
+historySearch=true
+itemCount=5
+lightTheme=Nord
+quitOnClose=false
+showCentered=true
+systemShadow=true

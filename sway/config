@@ -14,12 +14,13 @@ default_floating_border pixel 1
 #autostart
 #exec --no-startup-id feh --randomize --bg-scale ~/.config/img/wallpapers/* 
 exec_always --no-startup-id ~/.config/sway/random-wallpaper.sh
+exec_always --no-startup-id albert
 
 # start a terminal
 bindsym $super+Return exec wezterm 
 
 # start dmenu (a program launcher)
-bindsym $super+d exec wofi --show drun --allow-images
+bindsym $super+d exec albert toggle
 
 # common apps keybinds
 bindsym Print exec scrot 'Cheese_%a-%d%b%y_%H.%M.png' -e 'viewnior ~/$f'
