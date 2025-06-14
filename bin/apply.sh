@@ -9,3 +9,5 @@ fi
 mkdir -p ~/.local/bin
 cp ./tmux-sessionizer ~/.local/bin
 cp ./tmux-sessionizer-base ~/.tmux-sessionizer
+
+cp ./git-cloner ~/.local/bin

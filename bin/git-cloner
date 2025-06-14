@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+
+set -e
+
+# Ensure a git URL is provided
+if [ -z "$1" ]; then
+  echo "Usage: $0 <git-url>"
+  exit 1
+fi
+
+GIT_URL="$1"
+
+# Function to parse git URLs (supports both SSH and HTTPS)
+parse_git_url() {
+  local url="$1"
+  if [[ "$url" =~ ^git@([^:]+):([^/]+)/([^/]+)(\.git)?$ ]]; then
+    DOMAIN="${BASH_REMATCH[1]}"
+    USER="${BASH_REMATCH[2]}"
+    REPO="${BASH_REMATCH[3]}"
+  elif [[ "$url" =~ ^https?://([^/]+)/([^/]+)/([^/]+)(\.git)?$ ]]; then
+    DOMAIN="${BASH_REMATCH[1]}"
+    USER="${BASH_REMATCH[2]}"
+    REPO="${BASH_REMATCH[3]}"
+  else
+    echo "Invalid git URL format"
+    exit 1
+  fi
+  # Remove .git suffix if present
+  REPO="${REPO%.git}"
+}
+
+# Parse the URL
+parse_git_url "$GIT_URL"
+
+# Define destination path
+DEST="$HOME/code/$USER/$REPO"
+
+# Create parent directory if needed
+mkdir -p "$(dirname "$DEST")"
+
+# Clone the repository
+echo "Cloning $GIT_URL into $DEST..."
+git clone "$GIT_URL" "$DEST"
+
