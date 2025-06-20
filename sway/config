@@ -90,9 +90,6 @@ bindsym $super+Shift+4 move container to workspace 4
 bindsym $super+Shift+5 move container to workspace 5
 bindsym $super+Shift+6 move container to workspace 6
 
-# restart i3 inplace (preserves your layout/session, can be used to upgrade i3)
-bindsym $super+Shift+r restart
-
 # resize window (you can also use the mouse for that)
 mode "resize" {
         bindsym Left resize shrink width 5 px or 5 ppt
