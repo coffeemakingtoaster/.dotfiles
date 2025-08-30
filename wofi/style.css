@@ -1,0 +1,45 @@
+/* Wrapping window */
+window {
+	margin: 5em;
+	background-color: #2e3440;
+	border-radius: 20px;   /* make corners round */
+	overflow: hidden;      /* ensure children respect rounded shape */
+}
+
+/* Input box */
+#input {
+	margin: 5px;
+	border: none;
+	color: #d8dee9;
+	background-color: #3b4252;
+	border-radius: 10px;   /* rounded input */
+}
+
+/* Inner containers */
+#inner-box,
+#outer-box {
+	margin: 5px;
+	border: none;
+	background-color: #2e3440;
+	border-radius: 15px;
+}
+
+/* Scroll area */
+#scroll {
+	margin: 0;
+	border: none;
+}
+
+/* Entry text */
+#text {
+	margin: 5px;
+	border: none;
+	color: #d8dee9;
+}
+
+/* Selected entry */
+#entry:selected {
+	background-color: #3b4252;
+	border-radius: 10px;   /* rounded highlight */
+}
+
