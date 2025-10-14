@@ -1,0 +1,64 @@
+general {
+	colors = true
+	interval = 1
+	color_good =     '#88b090'  
+    	color_degraded = '#ccdc90'  
+    	color_bad =      '#e89393' 
+	output_format = 'i3bar'
+}
+
+order += "read_file weather"
+order += "load"
+order += "wireless _first_"
+order += "ethernet _first_"
+order += "volume master"
+order += "time"
+
+load {
+    format = "%5min Load"
+	separator_block_width = 20
+}
+
+wireless _first_ {
+	format_up = "  %quality » %essid "
+	format_down = ""
+	separator_block_width = 20
+}
+
+battery all {
+	format = "%status %percentage"
+
+	status_chr = " "
+	status_bat = " "
+        status_unk = " "
+        status_full = " "
+	
+	low_threshold = 11
+	threshold_type = percentage
+	integer_battery_capacity = true
+	last_full_capacity = true
+	hide_seconds = true
+	separator_block_width=20
+}
+
+time {
+	format = "  %d.%m %H:%M"
+	separator_block_width=20
+}
+
+ethernet _first_ {
+	format_up = "🔌 %ip"
+	format_down = ""
+}
+
+volume master {
+        format = "♪: %volume"
+        format_muted = "♪: muted (%volume)"
+        device = "default"
+        mixer = "Master"
+        mixer_idx = 0
+}
+
+read_file weather {
+	path="~/.weather.cache"
+}
