@@ -11,3 +11,4 @@ cp ./tmux-sessionizer ~/.local/bin
 cp ./tmux-sessionizer-base ~/.tmux-sessionizer
 
 cp ./git-cloner ~/.local/bin
+cp ./do-with-notify ~/.local/bincp
