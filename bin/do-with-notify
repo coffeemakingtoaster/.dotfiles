@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+set -uo pipefail
+
+# --- Capture display env NOW, before any tmux detach loses them ---
+: "${DISPLAY:=:0}"
+: "${DBUS_SESSION_BUS_ADDRESS:=unix:path=/run/user/$(id -u)/bus}"
+export DISPLAY DBUS_SESSION_BUS_ADDRESS
+
+if [[ $# -eq 0 ]]; then
+    echo "Usage: do-with-notify <command> [args...]"
+    echo "       some-command | do-with-notify"
+    exit 1
+fi
+
+PROJECT_DIR="$(basename "$PWD")"
+CMD_SHORT="${1##*/}"  # just the binary name for display
+
+# --- Run the command, preserving its output and exit code ---
+"$@"
+EXIT_CODE=$?
+
+# --- Notification ---
+TIMESTAMP="$(date +%H:%M:%S)"
+
+if [[ $EXIT_CODE -eq 0 ]]; then
+    notify-send \
+        --urgency=normal \
+        --expire-time=10000 \
+        --icon=dialog-information \
+        "✅ Build Succeeded" \
+        "<b>${CMD_SHORT}</b> in <i>${PROJECT_DIR}</i>\nFinished at ${TIMESTAMP}"
+else
+    notify-send \
+        --urgency=critical \
+        --expire-time=0 \
+        --icon=dialog-error \
+        "❌ Build Failed (exit ${EXIT_CODE})" \
+        "<b>${CMD_SHORT}</b> in <i>${PROJECT_DIR}</i>\nFinished at ${TIMESTAMP}"
+fi
+
+# Optional: audible bell so the tmux pane gets flagged
+printf '\a'
+
+exit $EXIT_CODE
