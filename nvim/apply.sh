@@ -26,6 +26,6 @@ fi
 # Cleanup
 rm -rf ~/.local/share/nvim/
 
-git clone --quiet https://github.com/coffeemakingtoaster/kickstart.nvim.git $HOME/.config/nvim
+cp -r ./nvim $HOME/.config/nvim
 
 exit 0
