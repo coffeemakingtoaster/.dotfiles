@@ -36,5 +36,4 @@ fi
 log_step "nvim" "resetting existing nvim state"
 rm -rf ~/.local/share/nvim/
 
-log_step "nvim" "cloning kickstart.nvim"
-git clone --quiet https://github.com/coffeemakingtoaster/kickstart.nvim.git $HOME/.config/nvim
+cp -r ./nvim $HOME/.config/nvim
