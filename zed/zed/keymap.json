@@ -1,0 +1,48 @@
+[
+  {
+    // These bindings only apply when in Vim Normal or Visual mode
+    "context": "VimControl && !menu",
+    "bindings": {
+      // --- Window Navigation (<C-h/j/k/l>) ---
+      "ctrl-h": "workspace::ActivatePaneLeft",
+      "ctrl-l": "workspace::ActivatePaneRight",
+      "ctrl-j": "workspace::ActivatePaneDown",
+      "ctrl-k": "workspace::ActivatePaneUp",
+
+      // --- Formatting ---
+      "space f": "editor::Format",
+
+      // --- Diagnostics (<leader>q / <leader>sd) ---
+      "space q": "diagnostics::Deploy",
+      "space s d": "diagnostics::Deploy",
+
+      // --- Telescope Equivalents ---
+      "space s f": "file_finder::Toggle", // Find Files
+      "space s g": "pane::DeploySearch", // Live Grep
+      "space s w": "pane::DeploySearch", // Search current word (Zed will auto-fill selected text)
+      "space s s": "command_palette::Toggle", // Search Builtins / Commands
+      "space s k": "zed::OpenKeymap", // Search Keymaps
+      "space space": "tab_switcher::Toggle", // Find existing buffers
+
+      // --- LSP Mappings ---
+      // Note: Zed defaults 'gd' to definition and 'gr' to references natively in Vim mode,
+      // but here is the explicit Kickstart translation:
+      "g r d": "editor::GoToDefinition",
+      "g r D": "editor::GoToTypeDefinition",
+      "g r r": "editor::FindAllReferences",
+      "g r i": "editor::GoToImplementation",
+      "g r n": "editor::Rename",
+      "g r a": "editor::ToggleCodeActions",
+
+      // Toggle Inlay Hints (<leader>th)
+      "space t h": "editor::ToggleInlayHints",
+    },
+  },
+  {
+    // Clear search highlights on Escape (nohlsearch equivalent)
+    "context": "VimControl && search",
+    "bindings": {
+      "escape": "buffer_search::Dismiss",
+    },
+  },
+]

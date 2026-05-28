@@ -1,0 +1,62 @@
+{
+  // Enable Vim mode!
+  "project_panel": {
+    "dock": "left"
+  },
+  "outline_panel": {
+    "dock": "left"
+  },
+  "collaboration_panel": {
+    "dock": "left"
+  },
+  "agent": {
+    "dock": "right",
+    "favorite_models": [],
+    "model_parameters": []
+  },
+  "git_panel": {
+    "dock": "left"
+  },
+  "icon_theme": "Material Icon Theme",
+  "ui_font_family": "Fixedsys Core",
+  "buffer_font_size": 13.0,
+  "buffer_font_family": "Fixedsys Core",
+  "vim_mode": true,
+
+  // Minimal number of screen lines to keep above and below the cursor (vim.o.scrolloff)
+  "vertical_scroll_margin": 10,
+
+  // Show whitespace characters (vim.o.list and vim.opt.listchars)
+  "show_whitespaces": "all",
+
+  // Sync clipboard between OS and Neovim (vim.o.clipboard = 'unnamedplus')
+  // Note: Zed does this by default for standard copy/paste, but for Vim yanks:
+  "vim": {
+    "use_system_clipboard": "always",
+    "use_multiline_find": true,
+  },
+
+  // Enable break indent (vim.o.breakindent)
+  "soft_wrap": "editor_width",
+
+  // Autoformat (stevearc/conform.nvim equivalent)
+  "formatter": "auto",
+  "format_on_save": "on",
+
+  // Inlay hints config (<leader>th equivalent)
+  "inlay_hints": {
+    "enabled": false, // Set to true if you want them on by default
+  },
+
+  // Gutter config (vim.o.signcolumn & gitsigns)
+  "git": {
+    "git_gutter": "tracked_files",
+  },
+
+  // UI splits behavior (vim.o.splitright & vim.o.splitbelow)
+  "pane_split_direction_horizontal": "down",
+  "pane_split_direction_vertical": "right",
+
+  // Colorscheme (Zed uses themes, you can download "Minimal" from Extensions if available)
+  "theme": "One Dark",
+}
