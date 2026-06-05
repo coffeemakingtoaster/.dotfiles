@@ -1,0 +1,83 @@
+" .ideavimrc configuration
+" Set leader key to space
+let mapleader = " "
+
+" Enable IdeaVim plugins for better functionality
+set ideajoin
+set idearefactormode=keep
+
+" Basic vim settings
+set number
+"" set relativenumber
+set ignorecase
+set smartcase
+set incsearch
+set hlsearch
+
+" Enable which-key plugin for leader key hints (if you have IdeaVim-EasyMotion or Which-Key plugin)
+set which-key
+set notimeout
+
+" ===== KICKSTART-STYLE KEYBINDINGS =====
+
+" <leader>sf - Search Files (like Telescope find_files)
+nnoremap <leader>sf :action GotoFile<CR>
+
+" <leader>sg - Search by Grep (like Telescope live_grep)
+nnoremap <leader>sg :action FindInPath<CR>
+
+" <leader><leader> - Search through currently open buffers/files
+nnoremap <leader><leader> :action Switcher<CR>
+
+" ===== ADDITIONAL USEFUL KEYBINDINGS =====
+
+" Search keybindings (additional telescope-like functions)
+nnoremap <leader>sh :action SearchEverywhere<CR>
+nnoremap <leader>sr :action RecentFiles<CR>
+nnoremap <leader>sc :action GotoClass<CR>
+nnoremap <leader>ss :action GotoSymbol<CR>
+nnoremap <leader>sa :action GotoAction<CR>
+
+" LSP-like keybindings
+" TODO: These are not exactly like nvim now are they?
+nnoremap gd :action GotoDeclaration<CR>
+nnoremap gr :action FindUsages<CR>
+nnoremap gi :action GotoImplementation<CR>
+nnoremap K :action QuickJavaDoc<CR>
+nnoremap <leader>rn :action RenameElement<CR>
+nnoremap <leader>ca :action ShowIntentionActions<CR>
+
+" Diagnostic/Error navigation
+nnoremap [d :action GotoPreviousError<CR>
+nnoremap ]d :action GotoNextError<CR>
+nnoremap <leader>sd :action ActivateProblemsViewToolWindow<CR>
+
+" Buffer/Window management
+nnoremap <leader>bd :action CloseContent<CR>
+nnoremap <leader>ba :action CloseAllEditors<CR>
+
+" Toggle features
+nnoremap <leader>e :action ActivateProjectToolWindow<CR>
+nnoremap <leader>t :action ActivateTerminalToolWindow<CR>
+
+" Clear search highlighting
+nnoremap <Esc> :nohlsearch<CR>
+
+set clipboard+=unnamed
+
+" Jump to tab by index (0-9)
+" Note: IntelliJ tabs are 1-indexed, so we map 1-9 for tabs 1-9, and 0 for tab 10
+nmap <Leader>j1 <Action>(GoToTab0)
+nmap <Leader>j2 <Action>(GoToTab1)
+nmap <Leader>j3 <Action>(GoToTab2)
+nmap <Leader>j4 <Action>(GoToTab3)
+nmap <Leader>j5 <Action>(GoToTab4)
+nmap <Leader>j6 <Action>(GoToTab5)
+nmap <Leader>j7 <Action>(GoToTab6)
+nmap <Leader>j8 <Action>(GoToTab7)
+nmap <Leader>j9 <Action>(GoToTab8)
+nmap <Leader>j0 <Action>(GoToTab9)
+
+" Previous/Next tab navigation
+nmap <Leader>jn <Action>(NextTab)
+nmap <Leader>jp <Action>(PreviousTab)
