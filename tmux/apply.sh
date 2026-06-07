@@ -2,8 +2,10 @@
 
 if [ "$(uname)" == "Darwin" ]; then
 	brew install tmux
+elif [ "${DISTRO:-}" = "fedora" ]; then
+	sudo dnf install -y tmux
 else
-	sudo apt-get install -y tmux 
+	sudo apt-get install -y tmux
 fi
 
 cp ./tmux.conf $HOME/.tmux.conf

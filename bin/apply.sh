@@ -2,8 +2,10 @@
 
 if [ "$(uname)" == "Darwin" ]; then
 	brew install fzf
+elif [ "${DISTRO:-}" = "fedora" ]; then
+	sudo dnf install -y fzf libnotify
 else
-	sudo apt install fzf
+	sudo apt install -y fzf libnotify-bin
 fi
 
 mkdir -p ~/.local/bin

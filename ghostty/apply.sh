@@ -1,8 +1,12 @@
 #!/usr/bin/env bash
 if [ "$(uname)" == "Darwin" ]; then
-	brew install --cask ghostty 
-else
+	brew install --cask ghostty
+	exit 0
+fi
 
+if [ "${DISTRO:-}" = "fedora" ]; then
+	sudo dnf install -y ghostty
+else
 	if type snap >/dev/null 2>&1; then
 		sudo snap install ghostty --classic
 	fi
@@ -11,7 +15,7 @@ fi
 cp -r ghostty $HOME/.config
 
 # This should (tm) ensure that the application support folder has been created
-# If that is not the case execute the rm command below again after starting ghostty for the first time 
+# If that is not the case execute the rm command below again after starting ghostty for the first time
 if type ghostty >/dev/null 2>&1; then
 	ghostty +show-config
 fi

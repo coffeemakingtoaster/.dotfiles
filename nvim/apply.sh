@@ -4,9 +4,14 @@ if [ "$(uname)" == "Darwin" ]; then
 	echo "Install neovim (homebrew)"
 	brew install nvim
 else
-	echo "Install neovim (no package manager) and needed packages for kickstart (via apt)"
+	echo "Install neovim and packages required by kickstart"
 
-	sudo apt install -y make gcc ripgrep unzip git xclip curl git
+	if [ "${DISTRO:-}" = "fedora" ]; then
+		sudo dnf install -y make gcc ripgrep unzip git curl wl-clipboard
+	else
+		sudo apt install -y make gcc ripgrep unzip git xclip curl git
+	fi
+
 	# Now we install nvim
 	# I use debian and the apt version is too far behind
 	curl -LO https://github.com/neovim/neovim/releases/latest/download/nvim-linux-x86_64.tar.gz

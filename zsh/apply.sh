@@ -3,6 +3,9 @@
 if [ "$(uname)" == "Darwin" ]; then
 	# zsh is default on osx
 	echo "zsh already present"
+elif [ "${DISTRO:-}" = "fedora" ]; then
+	sudo dnf install -y zsh
+	chsh -s $(which zsh)
 else
 	sudo apt-get install -y zsh
 	chsh -s $(which zsh)
