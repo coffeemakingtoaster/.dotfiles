@@ -1,0 +1,60 @@
+{
+  "layer": "top",
+  "position": "bottom",
+  "height": 15,
+  "spacing": 5,
+
+  "modules-left": [
+    "hyprland/workspaces"
+  ],
+
+  "modules-center": [],
+
+  "modules-right": [
+    "clock",
+    "cpu",
+    "network",
+    "pulseaudio",
+    "hyprland/language"
+  ],
+
+  "cpu": {
+    "interval": 1,
+    "format": " {load}%",
+    "tooltip": true
+  },
+
+  "network": {
+    "format-wifi": "  {essid} ({signalStrength}%)",
+    "format-ethernet": "🔌 {ipaddr}",
+    "format-disconnected": "",
+    "tooltip": true,
+    "interval": 3
+  },
+
+  "pulseaudio": {
+    "format": "♪ {volume}%",
+    "format-muted": "♪ muted",
+    "scroll-step": 5,
+    "on-click": "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"
+  },
+/* N/A
+  "battery": {
+    "states": {
+      "warning": 20,
+      "critical": 10
+    },
+    "format": "{icon} {capacity}%",
+    "format-charging": " {capacity}%",
+    "format-plugged": " {capacity}%",
+    "format-icons": ["", "", "", "", ""],
+    "interval": 10
+  },
+  */
+
+  "clock": {
+    "format": "  {:%d.%m %H:%M}",
+    "tooltip-format": "{:%A, %d %B %Y}",
+    "interval": 1
+  }
+}

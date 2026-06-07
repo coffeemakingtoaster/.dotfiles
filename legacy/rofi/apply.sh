@@ -4,16 +4,16 @@ if [ "$(uname)" == "Darwin" ]; then
 	exit 0
 fi
 
-# Exit if USE_SWAY is set
-if [[ -n "$USE_SWAY" ]]; then
-    echo "Warn: Sway environment detected (USE_SWAY is set)."
+# Exit if WM is not i3
+if [[ -n "$WM" && "$WM" != "i3" ]]; then
+    echo "Warn: WM='$WM' detected."
     echo "This script is intended only for i3 installations."
     exit 0
 fi
 
-# Ensure USE_I3 is set
-if [[ -z "$USE_I3" ]]; then
-    echo "Error: USE_I3 is not set. Please run the setup script first."
+# Ensure WM is set
+if [[ -z "$WM" ]]; then
+    echo "Error: WM is not set. Please run the setup script first."
     exit 1
 fi
 

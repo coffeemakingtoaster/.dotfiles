@@ -1,15 +1,15 @@
 #!/usr/bin/env bash
 
-# Exit if USE_I3 is set
-if [[ -n "$USE_I3" ]]; then
-    echo "Warn: i3 environment detected (USE_I3 is set)."
+# Exit if WM is not sway
+if [[ -n "$WM" && "$WM" != "sway" ]]; then
+    echo "Warn: WM='$WM' detected."
     echo "This script is intended only for Sway installations."
     exit 0
 fi
 
-# Ensure USE_SWAY is set
-if [[ -z "$USE_SWAY" ]]; then
-    echo "Error: USE_SWAY is not set. Please run the setup script first."
+# Ensure WM is set
+if [[ -z "$WM" ]]; then
+    echo "Error: WM is not set. Please run the setup script first."
     exit 1
 fi
 
