@@ -92,7 +92,8 @@ if [ "$fresh_home" -eq 1 ]; then
 	home_mount=(-v "$tmp_home:/home/tester:z")
 else
 	cache_home="$SCRIPT_DIR/.smoke-home"
-	podman unshare mkdir -p "$cache_home" 2>/dev/null || mkdir -p "$cache_home"
+	mkdir -p "$cache_home"
+	podman unshare chown 1000:1000 "$cache_home" 2>/dev/null || true
 	home_mount=(-v "$cache_home:/home/tester:z")
 fi
 
