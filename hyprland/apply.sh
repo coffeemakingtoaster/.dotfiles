@@ -29,11 +29,13 @@ if ! dnf copr list-enabled 2>/dev/null | grep -q "^lionheartp/Hyprland"; then
 fi
 
 log_step "hyprland" "installing hyprland and core packages"
+# ghostty is intentionally not in this list. It is a separate module
+# (ghostty/apply.sh) and may be in default Fedora repos or a COPR
+# depending on the release.
 sudo dnf install -y \
 	hyprland hyprlock hyprpaper \
 	wl-clipboard grim slurp \
 	pipewire wireplumber \
-	ghostty \
 	pavucontrol \
 	waybar
 
@@ -45,8 +47,11 @@ fi
 log_step "hyprland" "installing walker and elephant"
 sudo dnf install -y walker elephant
 
-# Enable Elephant as a user service if not already running
-if ! systemctl --user is-active elephant.service >/dev/null 2>&1; then
+# Enable Elephant as a user service if not already running.
+# Skipped in environments without systemd (containers, headless installs).
+if [[ -n "${DOTFILES_SKIP_SYSTEMD:-}" ]]; then
+	log_info "elephant service setup skipped (DOTFILES_SKIP_SYSTEMD is set)"
+elif ! systemctl --user is-active elephant.service >/dev/null 2>&1; then
 	log_step "hyprland" "enabling elephant user service"
 	elephant service enable
 	systemctl --user start elephant.service

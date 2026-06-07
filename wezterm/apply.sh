@@ -13,14 +13,19 @@ fi
 
 if [ "${DISTRO:-}" = "fedora" ]; then
 	log_step "wezterm" "resolving latest wezterm .rpm from GitHub"
-	# WezTerm publishes a portable Fedora rpm on every release; pick the
-	# newest one from the GitHub releases API and hand it to dnf.
+	# WezTerm publishes one .rpm per major Fedora release, plus a
+	# centos variant that we explicitly skip because it depends on
+	# OpenSSL 1.1 (which is not in current Fedora). Pick the
+	# highest-numbered fedora .rpm; if your Fedora is newer than
+	# any published .rpm, the highest available should still work
+	# (WezTerm keeps these around for backwards compatibility).
 	latest_rpm_url=$(curl -fsSL https://api.github.com/repos/wez/wezterm/releases/latest \
-		| grep -oE 'https://[^"]*\.rpm"' \
-		| head -n 1 \
-		| tr -d '"')
+		| grep -oE '"browser_download_url":\s*"[^"]*\.fedora[0-9]+\.x86_64\.rpm"' \
+		| sed 's/.*"\(https[^"]*\)".*/\1/' \
+		| sort -V \
+		| tail -n 1)
 	if [ -z "$latest_rpm_url" ]; then
-		log_err "could not determine the latest wezterm .rpm URL"
+		log_err "could not find a fedora-compatible wezterm .rpm in the latest release"
 		exit 1
 	fi
 	log_info "installing $latest_rpm_url"

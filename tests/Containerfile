@@ -1,0 +1,22 @@
+# Container image for the dotfiles installer smoke test.
+# Mirrors a fresh Fedora install: dnf, sudo, a non-root user that can
+# elevate without a password. The harness passes install.sh on the
+# command line; no ENTRYPOINT is set.
+
+FROM fedora:latest
+
+# base tooling the installer expects (wget, unzip, sudo)
+RUN dnf install -y sudo wget unzip findutils coreutils bash \
+	&& dnf clean all
+
+# Create a non-root user that matches the host UID so the mounted
+# dotfiles repo is readable. Passwordless sudo so dnf calls succeed.
+ARG HOST_UID=1000
+ARG HOST_GID=1000
+RUN groupadd -g "${HOST_GID}" tester \
+	&& useradd -m -u "${HOST_UID}" -g tester -G wheel tester \
+	&& echo "tester ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/tester \
+	&& chmod 0440 /etc/sudoers.d/tester
+
+USER tester
+WORKDIR /home/tester

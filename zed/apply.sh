@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
 
-cp -r ./zed $HOME/.config
+set -euo pipefail
 
-exit 0
+# shellcheck source=../lib/log.sh
+. "$(dirname "$0")/../lib/log.sh"
+log_init
+
+log_step "zed" "copying config"
+cp -r ./zed $HOME/.config

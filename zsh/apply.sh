@@ -11,10 +11,10 @@ if [ "$(uname)" == "Darwin" ]; then
 	log_info "zsh is the default shell on macOS, skipping install"
 elif [ "${DISTRO:-}" = "fedora" ]; then
 	sudo dnf install -y zsh
-	chsh -s $(which zsh)
+	sudo chsh -s "$(which zsh)" "${USER:-$(id -un)}"
 else
 	sudo apt-get install -y zsh
-	chsh -s $(which zsh)
+	sudo chsh -s "$(which zsh)" "${USER:-$(id -un)}"
 fi
 
 log_step "zsh" "installing oh-my-zsh"

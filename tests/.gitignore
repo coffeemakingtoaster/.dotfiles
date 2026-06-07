@@ -1,0 +1,3 @@
+# Smoke test artifacts
+tests/.smoke-home/
+tests/.smoke.log

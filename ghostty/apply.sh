@@ -14,7 +14,14 @@ fi
 
 if [ "${DISTRO:-}" = "fedora" ]; then
 	log_step "ghostty" "installing via dnf"
-	sudo dnf install -y ghostty
+	# ghostty is in default Fedora repos starting at Fedora 41.
+	# On older Fedora releases (≤40) the install will fail; we treat that as
+	# a non-fatal warning so the rest of the install can continue.
+	if sudo dnf install -y ghostty; then
+		log_ok "ghostty installed"
+	else
+		log_warn "ghostty is not in the default Fedora repos for this release; install the Hyprland COPR (see hyprland/apply.sh) or run on Fedora 41+"
+	fi
 else
 	log_step "ghostty" "installing via snap (if available)"
 	if type snap >/dev/null 2>&1; then

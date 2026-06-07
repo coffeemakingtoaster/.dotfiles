@@ -65,6 +65,14 @@ for cmd in "${directories[@]}"; do
 		continue
 	fi
 
+	# Directories that are not modules (e.g. lib/, tests/) have no
+	# apply.sh; skip them silently.
+	if [[ ! -x "./$cmd/apply.sh" ]]; then
+		log_step "$cmd" "skipped (no apply.sh)"
+		skipped=$((skipped + 1))
+		continue
+	fi
+
 	start_ts=$(date +%s)
 	log_step "$cmd" "starting"
 	if ( cd "./$cmd" && WM="$WM" DISTRO="$DISTRO" ./apply.sh ); then

@@ -19,18 +19,23 @@ else
 
 	log_step "nvim" "downloading nvim release tarball"
 	# We use the upstream binary tarball because the apt version is too old.
-	curl -LO https://github.com/neovim/neovim/releases/latest/download/nvim-linux-x86_64.tar.gz
+	# Download to a writable temp dir; the script's CWD may be on a
+	# read-only filesystem (e.g. when the dotfiles repo is bind-mounted
+	# read-only during testing).
+	tmp_tar=$(mktemp --suffix=.tar.gz)
+	curl -fsSL -o "$tmp_tar" \
+		https://github.com/neovim/neovim/releases/latest/download/nvim-linux-x86_64.tar.gz
 	# legacy location
 	sudo rm -rf /opt/nvim-linux64
 	# new location
 	sudo rm -rf /opt/nvim-linux-x86_64
 	sudo mkdir -p /opt/nvim-linux-x86_64
 	sudo chmod a+rX /opt/nvim-linux-x86_64
-	sudo tar -C /opt -xzf nvim-linux-x86_64.tar.gz
+	sudo tar -C /opt -xzf "$tmp_tar"
 
 	sudo ln -sf /opt/nvim-linux-x86_64/bin/nvim /usr/local/bin/
 
-	rm nvim-linux*
+	rm -f "$tmp_tar"
 fi
 
 log_step "nvim" "resetting existing nvim state"
