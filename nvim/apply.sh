@@ -1,19 +1,24 @@
 #!/usr/bin/env bash
 
+set -euo pipefail
+
+# shellcheck source=../lib/log.sh
+. "$(dirname "$0")/../lib/log.sh"
+log_init
+
 if [ "$(uname)" == "Darwin" ]; then
-	echo "Install neovim (homebrew)"
+	log_step "nvim" "installing nvim via homebrew"
 	brew install nvim
 else
-	echo "Install neovim and packages required by kickstart"
-
+	log_step "nvim" "installing build prerequisites"
 	if [ "${DISTRO:-}" = "fedora" ]; then
 		sudo dnf install -y make gcc ripgrep unzip git curl wl-clipboard
 	else
 		sudo apt install -y make gcc ripgrep unzip git xclip curl git
 	fi
 
-	# Now we install nvim
-	# I use debian and the apt version is too far behind
+	log_step "nvim" "downloading nvim release tarball"
+	# We use the upstream binary tarball because the apt version is too old.
 	curl -LO https://github.com/neovim/neovim/releases/latest/download/nvim-linux-x86_64.tar.gz
 	# legacy location
 	sudo rm -rf /opt/nvim-linux64
@@ -28,9 +33,8 @@ else
 	rm nvim-linux*
 fi
 
-# Cleanup
+log_step "nvim" "resetting existing nvim state"
 rm -rf ~/.local/share/nvim/
 
+log_step "nvim" "cloning kickstart.nvim"
 git clone --quiet https://github.com/coffeemakingtoaster/kickstart.nvim.git $HOME/.config/nvim
-
-exit 0
