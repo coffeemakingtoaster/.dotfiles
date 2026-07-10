@@ -3,8 +3,15 @@ set -uo pipefail
 
 # --- Capture display env NOW, before any tmux detach loses them ---
 : "${DISPLAY:=:0}"
+: "${WAYLAND_DISPLAY:=wayland-0}"
+: "${XDG_RUNTIME_DIR:=/run/user/$(id -u)}"
 : "${DBUS_SESSION_BUS_ADDRESS:=unix:path=/run/user/$(id -u)/bus}"
-export DISPLAY DBUS_SESSION_BUS_ADDRESS
+export DISPLAY WAYLAND_DISPLAY XDG_RUNTIME_DIR DBUS_SESSION_BUS_ADDRESS
+
+# Hyprland needs its socket dir; export if present
+if [[ -n "${HYPRLAND_INSTANCE_SIGNATURE:-}" ]]; then
+    export HYPRLAND_INSTANCE_SIGNATURE
+fi
 
 if [[ $# -eq 0 ]]; then
     echo "Usage: do-with-notify <command> [args...]"
@@ -16,26 +23,38 @@ PROJECT_DIR="$(basename "$PWD")"
 CMD_SHORT="${1##*/}"  # just the binary name for display
 
 # --- Run the command, preserving its output and exit code ---
+START_EPOCH=$(date +%s)
 "$@"
 EXIT_CODE=$?
+END_EPOCH=$(date +%s)
 
 # --- Notification ---
+ELAPSED=$(( END_EPOCH - START_EPOCH ))
+if   (( ELAPSED >= 3600 )); then ELAPSED_STR="$(( ELAPSED / 3600 ))h $(( ELAPSED % 3600 / 60 ))m"
+elif (( ELAPSED >=   60 )); then ELAPSED_STR="$(( ELAPSED / 60 ))m $(( ELAPSED % 60 ))s"
+else                              ELAPSED_STR="${ELAPSED}s"
+fi
 TIMESTAMP="$(date +%H:%M:%S)"
+CMD_SUMMARY="$(printf '%q ' "$@")"
+# Keep the body from getting absurdly wide
+(( ${#CMD_SUMMARY} > 80 )) && CMD_SUMMARY="${CMD_SUMMARY:0:77}..."
 
 if [[ $EXIT_CODE -eq 0 ]]; then
     notify-send \
+        --app-name=do-with-notify \
         --urgency=normal \
         --expire-time=10000 \
         --icon=dialog-information \
-        "✅ Build Succeeded" \
-        "<b>${CMD_SHORT}</b> in <i>${PROJECT_DIR}</i>\nFinished at ${TIMESTAMP}"
+        "✅ Done: ${CMD_SHORT}" \
+        "<b>${CMD_SHORT}</b> in <i>${PROJECT_DIR}</i>\n${CMD_SUMMARY}\n${ELAPSED_STR} • ${TIMESTAMP}"
 else
     notify-send \
+        --app-name=do-with-notify \
         --urgency=critical \
         --expire-time=0 \
         --icon=dialog-error \
-        "❌ Build Failed (exit ${EXIT_CODE})" \
-        "<b>${CMD_SHORT}</b> in <i>${PROJECT_DIR}</i>\nFinished at ${TIMESTAMP}"
+        "❌ Failed: ${CMD_SHORT} (exit ${EXIT_CODE})" \
+        "<b>${CMD_SHORT}</b> in <i>${PROJECT_DIR}</i>\n${CMD_SUMMARY}\n${ELAPSED_STR} • ${TIMESTAMP}"
 fi
 
 # Optional: audible bell so the tmux pane gets flagged
