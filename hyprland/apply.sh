@@ -54,7 +54,7 @@ fi
 
 log_step "hyprland" "copying configs"
 mkdir -p ~/.config/hypr/
-cp ./hyprland.conf ./hyprlock.conf ./hyprpaper.conf ~/.config/hypr/
+cp ./hyprland.lua ./hyprlock.conf ./hyprpaper.conf ~/.config/hypr/
 
 # Reload if already running
 if pgrep -x Hyprland >/dev/null; then
