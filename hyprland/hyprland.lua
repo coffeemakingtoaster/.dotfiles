@@ -117,7 +117,7 @@ hl.bind(mod .. " + " .. "D", hl.dsp.exec_cmd("walker"))
 
 hl.bind(mod .. " + " .. "L", hl.dsp.exec_cmd("hyprlock"))
 
-hl.bind(mod .. " + " .. "SHIFT" .. " + " .. "S", hl.dsp.exec_cmd('grim -g "$(slurp)"-| wl-copy'))
+hl.bind(mod .. " + " .. "SHIFT" .. " + " .. "S", hl.dsp.exec_cmd('grim -g "$(slurp)" - | wl-copy'))
 
 --###########################
 
