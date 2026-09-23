@@ -54,12 +54,40 @@ vim.api.nvim_create_autocmd("TextYankPost", {
 
 -- [[ Native Package Management (Neovim 12) ]]
 
+-- `vim.pack.add()` requires full URLs; "owner/repo" shorthand is not supported.
+local function gh(repo)
+	return "https://github.com/" .. repo
+end
+
+-- Build step for plugins that need compilation after install/update.
+-- See `:help vim.pack-events`
+local function run_build(name, cmd, cwd)
+	local result = vim.system(cmd, { cwd = cwd }):wait()
+	if result.code ~= 0 then
+		local output = (result.stderr ~= "" and result.stderr) or result.stdout or "No output from build command."
+		vim.notify(("Build failed for %s:\n%s"):format(name, output), vim.log.levels.ERROR)
+	end
+end
+
+vim.api.nvim_create_autocmd("PackChanged", {
+	callback = function(ev)
+		local name = ev.data.spec.name
+		local kind = ev.data.kind
+		if kind ~= "install" and kind ~= "update" then
+			return
+		end
+		if name == "telescope-fzf-native.nvim" and vim.fn.executable("make") == 1 then
+			run_build(name, { "make" }, ev.data.path)
+		end
+	end,
+})
+
 -- Simple utilities
-vim.pack.add({ "NMAC427/guess-indent.nvim" })
+vim.pack.add({ gh("NMAC427/guess-indent.nvim") })
 require("guess-indent").setup({})
 
 -- Git Signs
-vim.pack.add({ "lewis6991/gitsigns.nvim" })
+vim.pack.add({ gh("lewis6991/gitsigns.nvim") })
 require("gitsigns").setup({
 	signs = {
 		add = { text = "+" },
@@ -71,7 +99,7 @@ require("gitsigns").setup({
 })
 
 -- Which-key
-vim.pack.add({ "folke/which-key.nvim" })
+vim.pack.add({ gh("folke/which-key.nvim") })
 require("which-key").setup({
 	delay = 0,
 	icons = { mappings = vim.g.have_nerd_font },
@@ -85,12 +113,12 @@ require("which-key").setup({
 
 -- Telescope & Dependencies
 vim.pack.add({
-	"nvim-lua/plenary.nvim",
-	"nvim-telescope/telescope.nvim",
-	"nvim-telescope/telescope-ui-select.nvim",
+	gh("nvim-lua/plenary.nvim"),
+	gh("nvim-telescope/telescope.nvim"),
+	gh("nvim-telescope/telescope-ui-select.nvim"),
 })
 if vim.fn.executable("make") == 1 then
-	vim.pack.add("nvim-telescope/telescope-fzf-native.nvim")
+	vim.pack.add({ gh("nvim-telescope/telescope-fzf-native.nvim") })
 end
 
 require("telescope").setup({
@@ -108,18 +136,14 @@ vim.keymap.set("n", "<leader>sg", builtin.live_grep, { desc = "[S]earch by [G]re
 vim.keymap.set("n", "<leader><leader>", builtin.buffers, { desc = "[ ] Find existing buffers" })
 
 -- LSP Configuration
--- TODO: I think this can be slimmed down
 vim.pack.add({
-	"neovim/nvim-lspconfig",
-	"mason-org/mason.nvim",
-	"mason-org/mason-lspconfig.nvim",
-	"WhoIsSethDaniel/mason-tool-installer.nvim",
-	"j-hui/fidget.nvim",
-	"saghen/blink.cmp",
+	gh("neovim/nvim-lspconfig"),
+	gh("mason-org/mason.nvim"),
+	gh("j-hui/fidget.nvim"),
+	{ src = gh("saghen/blink.cmp"), version = vim.version.range("1.*") },
 })
 
 require("mason").setup()
-require("mason-lspconfig").setup()
 require("fidget").setup({})
 
 vim.api.nvim_create_autocmd("LspAttach", {
@@ -145,7 +169,7 @@ for name, server in pairs(servers) do
 end
 
 -- Formatter
-vim.pack.add({ "stevearc/conform.nvim" })
+vim.pack.add({ gh("stevearc/conform.nvim") })
 require("conform").setup({
 	formatters_by_ft = { lua = { "stylua" } },
 	format_on_save = { timeout_ms = 500, lsp_format = "fallback" },
@@ -158,33 +182,62 @@ require("blink.cmp").setup({
 })
 
 -- Colorscheme
-vim.pack.add({ "Yazeed1s/minimal.nvim" })
+vim.pack.add({ gh("Yazeed1s/minimal.nvim") })
 vim.cmd.colorscheme("minimal")
+-- minimal.nvim sets `g:colors_name` before its own `:hi clear`, which resets it
+vim.g.colors_name = "minimal"
 
 -- UI/Comments
-vim.pack.add({ "folke/todo-comments.nvim" })
+vim.pack.add({ gh("folke/todo-comments.nvim") })
 require("todo-comments").setup({ signs = false })
 
 -- Mini Modules
-vim.pack.add({ "nvim-mini/mini.nvim" })
+vim.pack.add({ gh("nvim-mini/mini.nvim") })
 require("mini.ai").setup()
 require("mini.surround").setup()
 require("mini.statusline").setup({ use_icons = vim.g.have_nerd_font })
 
 -- Treesitter
-vim.pack.add({ "nvim-treesitter/nvim-treesitter" })
-local ts_filetypes = { "bash", "c", "html", "lua", "markdown", "vim", "vimdoc" }
-require("nvim-treesitter").install(ts_filetypes)
+vim.pack.add({ { src = gh("nvim-treesitter/nvim-treesitter"), version = "main" } })
+local ts_languages = { "bash", "c", "html", "lua", "markdown", "markdown_inline", "vim", "vimdoc" }
+require("nvim-treesitter").install(ts_languages)
+
+---@param buf integer
+---@param language string
+local function treesitter_try_attach(buf, language)
+	-- Check if a parser exists and load it
+	if not vim.treesitter.language.add(language) then
+		return
+	end
+	if not vim.api.nvim_buf_is_valid(buf) then
+		return
+	end
+	vim.treesitter.start(buf, language)
+end
+
+local available_parsers = require("nvim-treesitter").get_available()
 vim.api.nvim_create_autocmd("FileType", {
-	pattern = ts_filetypes,
-	callback = function()
-		vim.treesitter.start()
+	callback = function(args)
+		local language = vim.treesitter.language.get_lang(args.match)
+		if not language then
+			return
+		end
+		local installed_parsers = require("nvim-treesitter").get_installed("parsers")
+		if vim.tbl_contains(installed_parsers, language) then
+			treesitter_try_attach(args.buf, language)
+		elseif vim.tbl_contains(available_parsers, language) then
+			require("nvim-treesitter").install(language):await(function()
+				treesitter_try_attach(args.buf, language)
+			end)
+		else
+			treesitter_try_attach(args.buf, language)
+		end
 	end,
 })
 
-vim.pack.add({ "OXY2DEV/markview.nvim" })
+vim.pack.add({ gh("OXY2DEV/markview.nvim") })
 
-require("markview").setup({ initial_state = false })
+require("markview").setup({ preview = { enable = false } })
 vim.keymap.set("n", "<leader>rm", function()
 	vim.cmd("Markview toggle")
 end, { silent = true, desc = "Toggle [R]ender [M]arkdown" })

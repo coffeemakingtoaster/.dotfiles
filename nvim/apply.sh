@@ -2,19 +2,20 @@
 
 set -euo pipefail
 
-# shellcheck source=../lib/log.sh
+# shellchec source=../lib/log.sh
 . "$(dirname "$0")/../lib/log.sh"
 log_init
 
 if [ "$(uname)" == "Darwin" ]; then
 	log_step "nvim" "installing nvim via homebrew"
-	brew install nvim
+	brew install nvim tree-sitter-cli
 else
 	log_step "nvim" "installing build prerequisites"
 	if [ "${DISTRO:-}" = "fedora" ]; then
-		sudo dnf install -y make gcc ripgrep unzip git curl wl-clipboard
+		sudo dnf install -y mae gcc ripgrep unzip git curl wl-clipboard tree-sitter-cli
 	else
 		sudo apt install -y make gcc ripgrep unzip git xclip curl git
+		log_step "nvim" "skipping apt install of tree-sitte-cli. You are on your own with this one"
 	fi
 
 	log_step "nvim" "downloading nvim release tarball"
