@@ -32,7 +32,7 @@ _log_color() {
 }
 
 _log_ts() {
-	printf '%(%H:%M:%S)T'
+    date '+%H:%M:%S'
 }
 
 _log_emit() {
