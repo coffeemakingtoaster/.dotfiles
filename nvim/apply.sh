@@ -37,4 +37,4 @@ fi
 log_step "nvim" "resetting existing nvim state"
 rm -rf ~/.local/share/nvim/
 
-cp -r ./nvim $HOME/.config/nvim
+cp -r ./nvim $HOME/.config
