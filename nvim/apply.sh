@@ -12,7 +12,7 @@ if [ "$(uname)" == "Darwin" ]; then
 else
 	log_step "nvim" "installing build prerequisites"
 	if [ "${DISTRO:-}" = "fedora" ]; then
-		sudo dnf install -y mae gcc ripgrep unzip git curl wl-clipboard tree-sitter-cli
+		sudo dnf install -y make gcc ripgrep unzip git curl wl-clipboard tree-sitter-cli
 	else
 		sudo apt install -y make gcc ripgrep unzip git xclip curl git
 		log_step "nvim" "skipping apt install of tree-sitte-cli. You are on your own with this one"
