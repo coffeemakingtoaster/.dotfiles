@@ -21,7 +21,8 @@ directory = "~/.herdr/worktrees"
 # Start with the sidebar collapsed to preserve terminal width. In compact mode it keeps
 # a narrow navigation/status rail; press Ctrl+B, then b to toggle the sidebar.
 sidebar_start_collapsed = true
-sidebar_collapsed_mode = "compact"
+# other option compact still took unneeded screen space "compact"
+sidebar_collapsed_mode = "hidden"
 
 # If you expand the sidebar, keep it narrower than the default where possible.
 sidebar_width = 22
