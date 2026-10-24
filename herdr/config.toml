@@ -31,6 +31,8 @@ sidebar_max_width = 28
 # Put the TAB BAR at the bottom. This does not reposition the agent panel itself.
 tab_bar_position = "bottom"
 
+prompt_new_tab_name = false
+
 # Group agents by workspace, which is useful when each repo has its own workspace.
 agent_panel_sort = "spaces"
 
