@@ -1,0 +1,132 @@
+# Skip the first-run onboarding screen. Remove/comment this if you still want onboarding.
+onboarding = false
+
+[theme]
+name = "terminal"
+# auto_switch = false
+
+[terminal]
+# On macOS, "auto" uses a login shell so PATH additions from shell setup are available.
+# On Linux, "auto" keeps Herdr's normal non-login shell behavior.
+shell_mode = "auto"
+# New tabs/workspaces follow the current workspace/pane directory by default.
+new_cwd = "follow"
+# default_shell = "/bin/zsh" # Optional: leave unset to use $SHELL.
+
+[worktrees]
+# Where Herdr creates managed Git worktrees (not your ordinary repositories).
+directory = "~/.herdr/worktrees"
+
+[ui]
+# Start with the sidebar collapsed to preserve terminal width. In compact mode it keeps
+# a narrow navigation/status rail; press Ctrl+B, then b to toggle the sidebar.
+sidebar_start_collapsed = true
+sidebar_collapsed_mode = "compact"
+
+# If you expand the sidebar, keep it narrower than the default where possible.
+sidebar_width = 22
+sidebar_min_width = 18
+sidebar_max_width = 28
+
+# Put the TAB BAR at the bottom. This does not reposition the agent panel itself.
+tab_bar_position = "bottom"
+
+# Group agents by workspace, which is useful when each repo has its own workspace.
+agent_panel_sort = "spaces"
+
+# Keep pane separators subtle; "auto" draws borders for split panes.
+pane_borders = "auto"
+pane_outer_borders = true
+
+# Preserve familiar terminal behavior.
+mouse_capture = true
+copy_on_select = true
+confirm_close = true
+
+[ui.sidebar.agents]
+# Agent rows shown when the sidebar is expanded. The agent/status is the primary row;
+# workspace/tab context is secondary. These rows do not create a bottom-docked agent panel.
+rows = [
+  ["state_icon", "agent", "state_text"],
+  ["workspace", "tab"],
+]
+row_gap = 0
+
+[ui.toast]
+# Show agent completion/needs-input notifications inside Herdr.
+delivery = "herdr"
+delay_seconds = 1
+
+[ui.toast.herdr]
+position = "bottom-right"
+
+[ui.sound]
+# Set false if agent state sounds become distracting.
+enabled = true
+
+[session]
+# Resume supported agents into their native sessions after Herdr restores a session.
+resume_agents_on_restore = true
+
+[remote]
+# Keep Herdr's documented SSH keepalive/connection-reuse behavior for remote attach.
+manage_ssh_config = true
+
+[advanced]
+# 10 MiB scrollback per pane. Increase for very long logs if needed.
+scrollback_limit_bytes = 10000000
+
+[keys]
+# Prefix-first bindings avoid stealing normal shell/editor keystrokes.
+prefix = "ctrl+b"
+
+# Repository picker: Ctrl+B, then f.
+# The popup runs fzf without adding a persistent tab or pane.
+
+# Everyday tab navigation.
+new_tab = "prefix+c"
+rename_tab = "prefix+shift+t"
+next_tab = "prefix+n"
+previous_tab = "prefix+p"
+switch_tab = "prefix+1..9"
+close_tab = "prefix+shift+x"
+
+# Pane navigation and splitting (tmux-like).
+focus_pane_left = "prefix+h"
+focus_pane_down = "prefix+j"
+focus_pane_up = "prefix+k"
+focus_pane_right = "prefix+l"
+split_vertical = "prefix+v"     # Side-by-side split.
+split_horizontal = "prefix+minus" # Stacked split.
+close_pane = "prefix+x"
+zoom = "prefix+z"
+resize_mode = "prefix+r"
+
+# Retain quick access to Herdr navigation/settings while the sidebar is collapsed.
+toggle_sidebar = "prefix+b"
+help = "prefix+?"
+settings = "prefix+s"
+reload_config = "prefix+shift+r"
+
+# Agent navigation. These shortcuts are available even when the sidebar is collapsed.
+previous_agent = "prefix+alt+comma"
+next_agent = "prefix+alt+period"
+focus_agent = "prefix+alt+1..9"
+
+# Other useful defaults retained by Herdr unless overridden:
+# workspace_picker = "prefix+w"
+# new_workspace = "prefix+shift+n"
+# rename_workspace = "prefix+shift+w"
+# close_workspace = "prefix+shift+d"
+# copy_mode = "prefix+["
+# edit_scrollback = "prefix+e"
+# detach = "prefix+q"
+
+[[keys.command]]
+key = "prefix+f"
+type = "popup"
+command = "$HOME/.local/bin/herdr-sessionizer"
+description = "Fuzzy-switch repository workspace"
+width = "85%"
+height = "80%"
+
