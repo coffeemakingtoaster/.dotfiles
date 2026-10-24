@@ -25,3 +25,8 @@ PATH=$PATH:~/go/bin
 export GIT_EDITOR=vim
 
 export GPG_TTY=$(tty)
+
+alias func='herdr stop'
+func() {
+    'herdr stop'='herdr server stop'
+}

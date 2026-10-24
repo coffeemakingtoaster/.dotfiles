@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# Fuzzy-select ~/code/<user>/<repository> and focus/create a matching Herdr workspace.
-# Workspace labels use the stable, collision-resistant form <user>/<repository>.
+# Fuzzy-select an existing Herdr workspace or a repository under ~/code.
+# Repository workspace labels use: <user>/<repository>.
 
 set -Eeuo pipefail
 
@@ -11,8 +11,13 @@ usage() {
   cat <<'USAGE'
 Usage: herdr-sessionizer [REPOSITORY_PATH]
 
-Without an argument, choose a repository with fzf from:
-  $HERDR_CODE_ROOT (defaults to ~/code), exactly two directory levels deep.
+Without an argument, fzf lists:
+  - Existing Herdr workspaces (including base and workspaces outside ~/code)
+  - Repositories under $HERDR_CODE_ROOT (defaults to ~/code) not yet opened
+
+Repository discovery follows ~/code/<user>/<repository> (exactly two levels).
+Selecting an existing workspace focuses it; selecting an unopened repository
+creates a workspace named <user>/<repository> and focuses it.
 
 With an argument, use that repository path directly.
 
@@ -40,73 +45,126 @@ fi
 command -v "$HERDR_BIN" >/dev/null 2>&1 || fail "cannot find Herdr CLI: $HERDR_BIN"
 command -v jq >/dev/null 2>&1 || fail "jq is required to inspect Herdr workspaces"
 
-if ! command -v fzf >/dev/null 2>&1 && (( $# == 0 )); then
-  fail "fzf is required to choose a repository"
+if (( $# == 0 )); then
+  command -v fzf >/dev/null 2>&1 || fail "fzf is required to choose a workspace or repository"
+fi
+
+if ! workspace_json="$("$HERDR_BIN" workspace list)"; then
+  fail "could not query Herdr workspaces; is the Herdr server running?"
+fi
+
+# Direct path mode is useful for scripts and manual invocation.
+if (( $# == 1 )); then
+  selected_kind="R"
+  selected_target="$1"
+else
+  tmpdir="$(mktemp -d "${TMPDIR:-/tmp}/herdr-sessionizer.XXXXXXXX")" || fail "could not create temporary directory"
+  trap 'rm -rf -- "$tmpdir"' EXIT
+  menu_file="$tmpdir/menu.tsv"
+  : > "$menu_file"
+
+  # First list all existing workspaces, so base and workspaces whose original
+  # repository path was moved/deleted are still reachable from the picker.
+  while IFS=$'\t' read -r label workspace_id; do
+    [[ -n "$workspace_id" ]] || continue
+    printf '[workspace] %s\tW\t%s\n' "$label" "$workspace_id" >> "$menu_file"
+  done < <(
+    jq -r '
+      .result.workspaces[]?
+      | [(.label // "(unnamed workspace)"), (.workspace_id // "")]
+      | @tsv
+    ' <<< "$workspace_json"
+  )
+
+  # Add repositories without a matching workspace. Existing workspaces are not
+  # duplicated in the menu; selecting those uses the stable Herdr workspace ID.
+  if code_root="$(cd -- "$CODE_ROOT" 2>/dev/null && pwd -P)"; then
+    while IFS= read -r -d '' repo_path; do
+      relative_path="${repo_path#"$code_root"/}"
+      IFS='/' read -r owner repository extra <<< "$relative_path"
+
+      [[ -n "${owner:-}" && -n "${repository:-}" && -z "${extra:-}" ]] || continue
+      workspace_label="$owner/$repository"
+
+      if jq -e --arg label "$workspace_label" \
+          'any(.result.workspaces[]?; .label == $label)' \
+          >/dev/null <<< "$workspace_json"; then
+        continue
+      fi
+
+      printf '[new repo] %s\tR\t%s\n' "$workspace_label" "$repo_path" >> "$menu_file"
+    done < <(
+      find "$code_root" \
+        -mindepth 2 -maxdepth 2 \
+        -type d \
+        ! -path '*/venv' \
+        -print0 2>/dev/null
+    )
+  fi
+
+  [[ -s "$menu_file" ]] || fail "no workspaces or repositories found"
+
+  # Deliberately display only column 1; columns 2-3 are dispatch metadata.
+  # Paths are handled by fzf placeholders with shell escaping in the preview.
+  if ! selected_record="$(
+    fzf \
+      --delimiter=$'\t' \
+      --with-nth=1 \
+      --prompt='workspace/repo> ' \
+      --layout=reverse \
+      --border \
+      --header='Existing workspaces + unopened repositories (Esc to cancel)' \
+      --preview='case {2} in R) git -C {3} status --short --branch 2>/dev/null || ls -la {3} ;; W) printf "Existing Herdr workspace\n" ;; esac' \
+      --preview-window='right:40%:wrap' \
+      < "$menu_file"
+  )"; then
+    # fzf returns nonzero when the user cancels with Esc/Ctrl-C.
+    exit 0
+  fi
+
+  [[ -n "$selected_record" ]] || exit 0
+  IFS=$'\t' read -r selected_display selected_kind selected_target <<< "$selected_record"
+fi
+
+if [[ "$selected_kind" == "W" ]]; then
+  [[ -n "$selected_target" ]] || fail "selected workspace entry has no ID"
+  "$HERDR_BIN" workspace focus "$selected_target" >/dev/null ||
+    fail "could not focus the selected workspace; it may have been closed"
+  exit 0
+fi
+
+selected_path="$selected_target"
+[[ -n "$selected_path" ]] || fail "selected repository entry has no path"
+
+if ! selected_path="$(cd -- "$selected_path" 2>/dev/null && pwd -P)"; then
+  fail "selected path does not exist or is not accessible: $selected_path"
 fi
 
 if ! code_root="$(cd -- "$CODE_ROOT" 2>/dev/null && pwd -P)"; then
   fail "repository root does not exist or is not accessible: $CODE_ROOT"
 fi
 
-if (( $# == 1 )); then
-  selected="$1"
-else
-  # Keep the original sessionizer's discovery rule: ~/code/<user>/<repository>.
-  # Do not include paths deeper than two levels, and skip a directory named venv.
-  # NUL delimiters preserve repository paths containing spaces or unusual characters.
-  if ! IFS= read -r -d '' selected < <(
-    find "$code_root" \
-      -mindepth 2 -maxdepth 2 \
-      -type d \
-      ! -path '*/venv' \
-      -print0 2>/dev/null |
-      fzf \
-        --read0 \
-        --print0 \
-        --prompt='repository> ' \
-        --layout=reverse \
-        --border \
-        --header='Select ~/code/<user>/<repository>' \
-        --preview='git -C {} status --short --branch 2>/dev/null || ls -la {}' \
-        --preview-window='right:40%:wrap'
-  ); then
-    # fzf returns no selection when the user presses Escape/Ctrl-C.
-    exit 0
-  fi
-fi
-
-[[ -n "$selected" ]] || exit 0
-
-if ! selected="$(cd -- "$selected" 2>/dev/null && pwd -P)"; then
-  fail "selected path does not exist or is not accessible: $selected"
-fi
-
-# Require the requested structure. This also prevents accidental creation of
-# workspaces for arbitrary paths passed as an argument.
-case "$selected" in
-  "$code_root"/*) relative_path="${selected#"$code_root"/}" ;;
-  *) fail "repository must be inside $code_root: $selected" ;;
+# Only accept paths in the original ~/code/<user>/<repository> structure.
+case "$selected_path" in
+  "$code_root"/*) relative_path="${selected_path#"$code_root"/}" ;;
+  *) fail "repository must be inside $code_root: $selected_path" ;;
 esac
 
-# Split relative path into exactly two directory components: user/repository.
 IFS='/' read -r owner repository extra <<< "$relative_path"
 if [[ -z "${owner:-}" || -z "${repository:-}" || -n "${extra:-}" ]]; then
-  fail "expected a path shaped like $code_root/<user>/<repository>: $selected"
+  fail "expected a path shaped like $code_root/<user>/<repository>: $selected_path"
 fi
 
 workspace_label="$owner/$repository"
 
-# workspace list returns a JSON response with result.workspaces[].workspace_id
-# and result.workspaces[].label. Existing workspaces are focused rather than duplicated.
+# Re-read after fzf: a workspace could have been created while the picker was open.
 if ! workspace_json="$("$HERDR_BIN" workspace list)"; then
-  fail "could not query Herdr workspaces; is the Herdr server running?"
+  fail "could not refresh Herdr workspaces; is the Herdr server running?"
 fi
 
-if ! workspace_id="$(jq -er --arg label "$workspace_label" '
+workspace_id="$(jq -r --arg label "$workspace_label" '
   [.result.workspaces[]? | select(.label == $label) | .workspace_id][0] // empty
-' <<< "$workspace_json" 2>/dev/null)"; then
-  workspace_id=""
-fi
+' <<< "$workspace_json")"
 
 if [[ -n "$workspace_id" ]]; then
   "$HERDR_BIN" workspace focus "$workspace_id" >/dev/null ||
@@ -114,9 +172,8 @@ if [[ -n "$workspace_id" ]]; then
   exit 0
 fi
 
-# New workspace: label identifies the owner and repository; cwd points at the checkout.
 "$HERDR_BIN" workspace create \
-  --cwd "$selected" \
+  --cwd "$selected_path" \
   --label "$workspace_label" \
   --focus >/dev/null ||
-  fail "could not create workspace '$workspace_label' at $selected"
+  fail "could not create workspace '$workspace_label' at $selected_path"
